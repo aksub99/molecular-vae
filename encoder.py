@@ -45,4 +45,5 @@ class Encoder(nn.Module):
         x = self.relu(self.linear_1(x)) # (None, 435)
         self.z_mean = self.linear_2(x)
         self.z_log_var = self.linear_3(x)
-        return (self.vae_loss, LambdaLayer(self.sampling, output_shape = (self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))    
+        return (self.vae_loss, LambdaLayer(self.sampling, output_shape = (self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))
+        
