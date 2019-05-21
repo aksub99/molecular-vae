@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from utils import LambdaLayer
 
 # input size (None, 120, 35)
 class Encoder(nn.Module):
@@ -11,6 +12,8 @@ class Encoder(nn.Module):
         self.latent_rep_size = latent_rep_size
         self.max_length = max_length
         self.epsilon_std = epsilon_std
+        self.z_mean
+        self.z_log_var
 
         self.conv_1 = nn.Conv1d(in_channels = 120, out_channels = 9, kernel_size = 9)
         self.conv_2 = nn.Conv1d(in_channels = 9, out_channels = 9, kernel_size = 9)
@@ -28,12 +31,10 @@ class Encoder(nn.Module):
         return z_mean_ + torch.exp(z_log_var_ / 2) * epsilon
 
     def vae_loss(self, x, x_decoded_mean): # call this from forward
-        z_mean = self.linear_2(x)
-        z_log_var = self.linear_3(x)
         x = x.view(x.size()[0], -1)
         x_decoded_mean = x_decoded_mean.view(x_decoded_mean.size()[0], -1)
         xent_loss = self.max_length * nn.BCELoss(x, x_decoded_mean)
-        k1_loss = - 0.5 * torch.mean(1 + z_log_var - torch.square(z_mean) - torch.exp(z_log_var), axis = -1)
+        k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.square(self.z_mean) - torch.exp(self.z_log_var), axis = -1)
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
@@ -42,6 +43,6 @@ class Encoder(nn.Module):
         x = self.relu(self.conv_3(x)) # (None, 10, 9)
         x = x.view(x.size()[0], -1) # (None, 90)
         x = self.relu(self.linear_1(x)) # (None, 435)
-        return(vae_loss, Lambda(sampling, output_shape = (latent_rep_size,), name = 'lambda')([z_mean, z_log_var]))
-
-        
+        self.z_mean = self.linear_2(x)
+        self.z_log_var = self.linear_3(x)
+        return (self.vae_loss, LambdaLayer(self.sampling, output_shape = (self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))    
