@@ -18,6 +18,7 @@ class RepeatVector(nn.Module):
         self.n = n
 
     def forward(self, x):
-        return x.repeat(1, self.n, 1)
+        h = x.repeat(self.n, 1)
+        return h.view(x.shape[0], -1, x.shape[1])
 
     
