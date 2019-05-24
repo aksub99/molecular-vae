@@ -12,8 +12,8 @@ class Encoder(nn.Module):
         self.latent_rep_size = latent_rep_size
         self.max_length = max_length
         self.epsilon_std = epsilon_std
-        self.z_mean
-        self.z_log_var
+        self.z_mean = None
+        self.z_log_var = None
 
         self.conv_1 = nn.Conv1d(in_channels = 120, out_channels = 9, kernel_size = 9)
         self.conv_2 = nn.Conv1d(in_channels = 9, out_channels = 9, kernel_size = 9)
@@ -45,5 +45,10 @@ class Encoder(nn.Module):
         x = self.relu(self.linear_1(x)) # (None, 435)
         self.z_mean = self.linear_2(x)
         self.z_log_var = self.linear_3(x)
-        return (self.vae_loss, LambdaLayer(self.sampling, output_shape = (self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))
-        
+        output_tuple = (self.vae_loss, LambdaLayer(self.sampling, output_shape = (-1, self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))
+        return output_tuple
+
+if __name__ == "__main__":
+    encoder = Encoder(292, 120, 0.01)
+    x = torch.rand((100, 120, 35))
+    print(encoder.forward(x))
