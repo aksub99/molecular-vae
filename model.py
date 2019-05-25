@@ -4,7 +4,7 @@ from decoder import Decoder
 
 class MoleculeVAE(nn.Module):
     
-    def __init__(self, in_channels, charset, max_length = 120, latent_rep_size = 292):
+    def __init__(self, charset, max_length = 120, latent_rep_size = 292):
         super(MoleculeVAE, self).__init__()
         charset_length = len(charset)
         self.encoder = Encoder(latent_rep_size, max_length)
