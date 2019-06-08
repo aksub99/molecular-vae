@@ -54,3 +54,4 @@ if __name__ == "__main__":
     encoder = Encoder(292, 120, 0.01)
     x = torch.rand((100, 120, 35))
     print(encoder.forward(x))
+    
