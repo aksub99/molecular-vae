@@ -40,7 +40,7 @@ def main():
     data_train, data_test, charset = load_dataset(args.data)
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
     optimizer  = optim.Adam(model.parameters(), lr = 1e-4)
-    scheduler = ReduceLROnPlateau(optimizer, 'min')
+    # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
@@ -55,7 +55,7 @@ def main():
             loss = vae_loss(outputs, labels)
             loss.backward()
             optimizer.step()
-            scheduler.step()
+            # scheduler.step(loss)
 
             # print statistics
             running_loss += loss.item()

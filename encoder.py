@@ -37,7 +37,7 @@ class Encoder(nn.Module):
         criterion = nn.BCELoss()
         bce_loss = criterion(x, x_decoded_mean)
         xent_loss = self.max_length * bce_loss
-        k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.square(self.z_mean) - torch.exp(self.z_log_var), axis = -1)
+        k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.pow(self.z_mean, 2) - torch.exp(self.z_log_var))
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
