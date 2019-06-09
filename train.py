@@ -49,7 +49,8 @@ def main():
         running_loss = 0.0
         for i in range(args.batch_size):
             # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]).to(device), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]).to(device)
+            inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
+            inputs, labels = inputs.to(device), labels.to(device)
             # zero the parameter gradients
             optimizer.zero_grad()
 
