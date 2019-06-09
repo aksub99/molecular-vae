@@ -18,7 +18,7 @@ class Encoder(nn.Module):
         self.conv_1 = nn.Conv1d(in_channels = 120, out_channels = 9, kernel_size = 9)
         self.conv_2 = nn.Conv1d(in_channels = 9, out_channels = 9, kernel_size = 9)
         self.conv_3 = nn.Conv1d(in_channels = 9, out_channels = 10, kernel_size = 11)
-        self.linear_1 = nn.Linear(10*9, 435)
+        self.linear_1 = nn.Linear(10*7, 435)
         self.linear_2 = nn.Linear(435, latent_rep_size)
         self.linear_3 = nn.Linear(435, latent_rep_size)
 
@@ -40,10 +40,10 @@ class Encoder(nn.Module):
 
     def forward(self, x): # run this first
         print(x)
-        x = self.relu(self.conv_1(x)) # (None, 9, 27)
-        x = self.relu(self.conv_2(x)) # (None, 9, 19)
-        x = self.relu(self.conv_3(x)) # (None, 10, 9)
-        x = x.view(x.size()[0], -1) # (None, 90)
+        x = self.relu(self.conv_1(x)) # (None, 9, 25)
+        x = self.relu(self.conv_2(x)) # (None, 9, 17)
+        x = self.relu(self.conv_3(x)) # (None, 10, 7)
+        x = x.view(x.size()[0], -1) # (None, 70)
         x = self.relu(self.linear_1(x)) # (None, 435)
         self.z_mean = self.linear_2(x)
         self.z_log_var = self.linear_3(x)
@@ -54,4 +54,3 @@ if __name__ == "__main__":
     encoder = Encoder(292, 120, 0.01)
     x = torch.rand((100, 120, 35))
     print(encoder.forward(x))
-    

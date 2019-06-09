@@ -33,7 +33,9 @@ def main():
     from model import MoleculeVAE
     from utils import one_hot_array, one_hot_index, from_one_hot_array, \
         decode_smiles_from_indexes, load_dataset
+    import torch
     import torch.optim as optim
+    from torch.optim.lr_scheduler import ReduceLROnPlateau
 
     data_train, data_test, charset = load_dataset(args.data)
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
@@ -42,10 +44,9 @@ def main():
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
-        for i range(args.batch_size):
+        for i in range(args.batch_size):
             # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data_train[i*args.batch_size:(i+1)*args.batch_size,], data_train[i*args.batch_size:(i+1)*args.batch_size,]
-
+            inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
             # zero the parameter gradients
             optimizer.zero_grad()
 
@@ -53,6 +54,7 @@ def main():
             outputs, vae_loss = model.forward(inputs)
             loss = vae_loss(outputs, labels)
             loss.backward()
+            optimizer.step()
             scheduler.step()
 
             # print statistics
