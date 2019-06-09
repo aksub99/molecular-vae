@@ -34,7 +34,9 @@ class Encoder(nn.Module):
     def vae_loss(self, x, x_decoded_mean): # call this from forward
         x = x.view(x.size()[0], -1)
         x_decoded_mean = x_decoded_mean.view(x_decoded_mean.size()[0], -1)
-        xent_loss = self.max_length * nn.BCELoss(x, x_decoded_mean)
+        criterion = nn.BCELoss()
+        bce_loss = criterion(x, x_decoded_mean)
+        xent_loss = self.max_length * bce_loss
         k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.square(self.z_mean) - torch.exp(self.z_log_var), axis = -1)
         return xent_loss + k1_loss
 
