@@ -42,17 +42,12 @@ def main():
     optimizer  = optim.Adam(model.parameters(), lr = 1e-4)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    print("1")
-    print(next(model.parameters()).is_cuda)
     num_batches = int(50000/args.batch_size)
-    print(num_batches)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i in range(66):
-            print("batch number")
-            print(i)
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
             inputs, labels = inputs.type(torch.FloatTensor), labels.type(torch.FloatTensor)
@@ -62,10 +57,6 @@ def main():
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            print("2")
-            print(inputs.device)
-            print("3")
-            print(labels.device)
             outputs, vae_loss = model(inputs)
             loss = vae_loss(outputs, labels)
             loss.backward()
@@ -74,7 +65,7 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 2000 == 1999:    # print every 2000 mini-batches
+            if i % 20 == 19:    # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
