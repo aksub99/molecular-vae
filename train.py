@@ -39,7 +39,7 @@ def main():
 
     data_train, data_test, charset = load_dataset(args.data)
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
-    optimizer  = optim.Adam(model.parameters(), lr = 5e-3)
+    optimizer  = optim.Adam(model.parameters(), lr = 2e-3)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
     num_batches = int(40000/args.batch_size)
@@ -65,9 +65,9 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 20 == 19:    # print every 2000 mini-batches
+            if i % 200 == 199:    # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 20))
+                      (epoch + 1, i + 1, running_loss / 200))
                 running_loss = 0.0
 
     print('Finished Training')
