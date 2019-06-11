@@ -41,7 +41,7 @@ class Encoder(nn.Module):
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
-        print(x)
+        print(x.shape)
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print("6")
         print(x.device)
