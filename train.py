@@ -50,7 +50,7 @@ def main():
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
-        for i in range(num_batches):
+        for i in range(66):
             print("batch number")
             print(i)
             # get the inputs; data is a list of [inputs, labels]
