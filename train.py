@@ -7,7 +7,7 @@ import numpy as np
 
 
 NUM_EPOCHS = 1
-BATCH_SIZE = 100
+BATCH_SIZE = 400
 LATENT_DIM = 292
 RANDOM_SEED = 1337
 
@@ -65,9 +65,9 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 200 == 199:    # print every 2000 mini-batches
+            if i % 20 == 19:    # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 200))
+                      (epoch + 1, i + 1, running_loss / 20))
                 running_loss = 0.0
 
     print('Finished Training')
