@@ -41,10 +41,7 @@ class Encoder(nn.Module):
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
-        print(x.shape)
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        print("6")
-        print(x.device)
         x = self.relu(self.conv_1(x)) # (None, 9, 25)
         x = self.relu(self.conv_2(x)) # (None, 9, 17)
         x = self.relu(self.conv_3(x)) # (None, 10, 7)
@@ -52,13 +49,8 @@ class Encoder(nn.Module):
         x = self.relu(self.linear_1(x)) # (None, 435)
         self.z_mean = self.linear_2(x)
         self.z_log_var = self.linear_3(x)
-        print("7")
-        print(self.z_mean.device)
-        print("8")
-        print(self.z_log_var.device)
         lambd = LambdaLayer(self.sampling, output_shape = (-1, self.latent_rep_size,), name = 'lambda').to(device)
         output_tuple = (self.vae_loss, lambd([self.z_mean, self.z_log_var]))
-        print("tuple")
         return output_tuple
 
 if __name__ == "__main__":
