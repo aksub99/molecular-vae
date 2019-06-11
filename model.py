@@ -1,23 +1,31 @@
+import torch
 import torch.nn as nn
 from encoder import Encoder
 from decoder import Decoder
 
 class MoleculeVAE(nn.Module):
     
-    def __init__(self, charset, max_length = 120, latent_rep_size = 292):
+    def __init__(self, charset, max_length = 120, latent_rep_size = 292, mode = 'autoencoder'):
         super(MoleculeVAE, self).__init__()
         charset_length = len(charset)
+        self.mode = mode
         self.encoder = Encoder(latent_rep_size, max_length)
         self.decoder = Decoder(latent_rep_size, max_length, charset_length)
 
-    def forward(self, x, mode = 'autoencoder'):
-        
-        z_latent = self.encoder(x)
+    def forward(self, x):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.encoder.to(device)
+        self.decoder.to(device)
+        print("4")
+        print(next(self.encoder.parameters()).is_cuda)
+        print("5")
+        print(next(self.decoder.parameters()).is_cuda)
+        vae_loss, z_latent = self.encoder(x)
         decoded_string = self.decoder(z_latent)
         
-        if mode == 'encoder':
+        if self.mode == 'encoder':
             return z_latent
-        elif mode == 'decoder':
+        elif self.mode == 'decoder':
             return self.decoder(x)
         else:
-            return decoded_string
+            return decoded_string, vae_loss

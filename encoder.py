@@ -18,7 +18,7 @@ class Encoder(nn.Module):
         self.conv_1 = nn.Conv1d(in_channels = 120, out_channels = 9, kernel_size = 9)
         self.conv_2 = nn.Conv1d(in_channels = 9, out_channels = 9, kernel_size = 9)
         self.conv_3 = nn.Conv1d(in_channels = 9, out_channels = 10, kernel_size = 11)
-        self.linear_1 = nn.Linear(10*9, 435)
+        self.linear_1 = nn.Linear(10*7, 435)
         self.linear_2 = nn.Linear(435, latent_rep_size)
         self.linear_3 = nn.Linear(435, latent_rep_size)
 
@@ -34,20 +34,31 @@ class Encoder(nn.Module):
     def vae_loss(self, x, x_decoded_mean): # call this from forward
         x = x.view(x.size()[0], -1)
         x_decoded_mean = x_decoded_mean.view(x_decoded_mean.size()[0], -1)
-        xent_loss = self.max_length * nn.BCELoss(x, x_decoded_mean)
-        k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.square(self.z_mean) - torch.exp(self.z_log_var), axis = -1)
+        criterion = nn.BCELoss()
+        bce_loss = criterion(x, x_decoded_mean)
+        xent_loss = self.max_length * bce_loss
+        k1_loss = - 0.5 * torch.mean(1 + self.z_log_var - torch.pow(self.z_mean, 2) - torch.exp(self.z_log_var))
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
-        print(x)
-        x = self.relu(self.conv_1(x)) # (None, 9, 27)
-        x = self.relu(self.conv_2(x)) # (None, 9, 19)
-        x = self.relu(self.conv_3(x)) # (None, 10, 9)
-        x = x.view(x.size()[0], -1) # (None, 90)
+        print(x.shape)
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        print("6")
+        print(x.device)
+        x = self.relu(self.conv_1(x)) # (None, 9, 25)
+        x = self.relu(self.conv_2(x)) # (None, 9, 17)
+        x = self.relu(self.conv_3(x)) # (None, 10, 7)
+        x = x.view(x.size()[0], -1) # (None, 70)
         x = self.relu(self.linear_1(x)) # (None, 435)
         self.z_mean = self.linear_2(x)
         self.z_log_var = self.linear_3(x)
-        output_tuple = (self.vae_loss, LambdaLayer(self.sampling, output_shape = (-1, self.latent_rep_size,), name = 'lambda')([self.z_mean, self.z_log_var]))
+        print("7")
+        print(self.z_mean.device)
+        print("8")
+        print(self.z_log_var.device)
+        lambd = LambdaLayer(self.sampling, output_shape = (-1, self.latent_rep_size,), name = 'lambda').to(device)
+        output_tuple = (self.vae_loss, lambd([self.z_mean, self.z_log_var]))
+        print("tuple")
         return output_tuple
 
 if __name__ == "__main__":
