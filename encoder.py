@@ -28,6 +28,7 @@ class Encoder(nn.Module):
         z_mean_, z_log_var_ = args
         batch_size = list(z_mean_.shape)[0]
         epsilon = torch.randn(batch_size, self.latent_rep_size) * self.epsilon_std + 0.
+        epsilon = epsilon.cuda()
         return z_mean_ + torch.exp(z_log_var_ / 2) * epsilon
 
     def vae_loss(self, x, x_decoded_mean): # call this from forward
