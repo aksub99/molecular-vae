@@ -45,11 +45,14 @@ def main():
     print("1")
     print(next(model.parameters()).is_cuda)
     num_batches = int(50000/args.batch_size)
+    print(num_batches)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i in range(num_batches):
+            print("batch number")
+            print(i)
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
             inputs, labels = inputs.type(torch.FloatTensor), labels.type(torch.FloatTensor)
