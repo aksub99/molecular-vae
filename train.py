@@ -39,7 +39,7 @@ def main():
 
     data_train, data_test, charset = load_dataset(args.data)
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
-    optimizer  = optim.Adam(model.parameters(), lr = 1e-2)
+    optimizer  = optim.Adam(model.parameters(), lr = 5e-3)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
     num_batches = int(50000/args.batch_size)
