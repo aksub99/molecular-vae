@@ -42,12 +42,12 @@ def main():
     optimizer  = optim.Adam(model.parameters(), lr = 5e-3)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    num_batches = int(50000/args.batch_size)
+    num_batches = int(40000/args.batch_size)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
-        for i in range(66):
+        for i in range(num_batches):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
             inputs, labels = inputs.type(torch.FloatTensor), labels.type(torch.FloatTensor)
