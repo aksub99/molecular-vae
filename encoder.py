@@ -39,6 +39,7 @@ class Encoder(nn.Module):
         return xent_loss + k1_loss
 
     def forward(self, x): # run this first
+        print(x)
         x = self.relu(self.conv_1(x)) # (None, 9, 27)
         x = self.relu(self.conv_2(x)) # (None, 9, 19)
         x = self.relu(self.conv_3(x)) # (None, 10, 9)
