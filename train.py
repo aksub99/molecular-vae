@@ -41,21 +41,23 @@ def main():
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
     optimizer  = optim.Adam(model.parameters(), lr = 1e-4)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(device)
     model.to(device)
+    num_batches = int(50000/args.batch_size)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
-        for i in range(args.batch_size):
+        for i in range(num_batches):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,]), torch.from_numpy(data_train[i*args.batch_size:(i+1)*args.batch_size,])
+            inputs, labels = inputs.type(torch.FloatTensor), labels.type(torch.FloatTensor)
             inputs, labels = inputs.to(device), labels.to(device)
+            
             # zero the parameter gradients
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs, vae_loss = model.forward(inputs)
+            outputs, vae_loss = model(inputs)
             loss = vae_loss(outputs, labels)
             loss.backward()
             optimizer.step()
