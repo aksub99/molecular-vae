@@ -7,7 +7,7 @@ import numpy as np
 
 
 NUM_EPOCHS = 1
-BATCH_SIZE = 32
+BATCH_SIZE = 100
 LATENT_DIM = 292
 RANDOM_SEED = 1337
 
