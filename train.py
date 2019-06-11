@@ -43,7 +43,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
     print("1")
-    print(model.device)
+    print(next(model.parameters()).is_cuda)
     num_batches = int(50000/args.batch_size)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
