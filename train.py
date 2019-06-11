@@ -42,6 +42,8 @@ def main():
     optimizer  = optim.Adam(model.parameters(), lr = 1e-4)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
+    print("1")
+    print(model.device)
     num_batches = int(50000/args.batch_size)
     # scheduler = ReduceLROnPlateau(optimizer, 'min')
     for epoch in range(args.epochs):  # loop over the dataset multiple times
@@ -57,6 +59,10 @@ def main():
             optimizer.zero_grad()
 
             # forward + backward + optimize
+            print("2")
+            print(inputs.device)
+            print("3")
+            print(labels.device)
             outputs, vae_loss = model(inputs)
             loss = vae_loss(outputs, labels)
             loss.backward()
