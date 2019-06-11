@@ -7,7 +7,7 @@ import numpy as np
 
 
 NUM_EPOCHS = 1
-BATCH_SIZE = 400
+BATCH_SIZE = 512
 LATENT_DIM = 292
 RANDOM_SEED = 1337
 
@@ -39,7 +39,7 @@ def main():
 
     data_train, data_test, charset = load_dataset(args.data)
     model = MoleculeVAE(charset = charset, latent_rep_size = args.latent_dim)
-    optimizer  = optim.Adam(model.parameters(), lr = 3e-4)
+    optimizer  = optim.Adam(model.parameters(), lr = 1e-3)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
     num_batches = int(40000/args.batch_size)
