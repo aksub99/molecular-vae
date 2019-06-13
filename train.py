@@ -1,5 +1,6 @@
 from __future__ import print_function
-
+import torch
+import torch.nn as nn
 import argparse
 import os
 import h5py
@@ -10,6 +11,15 @@ NUM_EPOCHS = 1
 BATCH_SIZE = 512
 LATENT_DIM = 292
 RANDOM_SEED = 1337
+
+def vae_loss(x, x_decoded_mean, mean, logvar): # call this from forward
+    x = x.view(x.size()[0], -1)
+    x_decoded_mean = x_decoded_mean.view(x_decoded_mean.size()[0], -1)
+    criterion = nn.BCELoss()
+    bce_loss = criterion(x, x_decoded_mean)
+    xent_loss = 120 * bce_loss
+    k1_loss = - 0.5 * torch.mean(1 + logvar - torch.pow(mean, 2) - torch.exp(logvar))
+    return xent_loss + k1_loss
 
 def get_arguments():
     parser = argparse.ArgumentParser(description='Molecular autoencoder network')
@@ -57,20 +67,31 @@ def main():
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs, vae_loss = model(inputs)
-            loss = vae_loss(outputs, labels)
+            outputs, mean, logvar = model.forward(inputs)
+            
+            # Debugging statements
+            if i==0:
+              inp = inputs.cpu().numpy()
+              outp = outputs.cpu().detach().numpy()
+              lab = labels.cpu().numpy()
+              print("Input:")
+              print(decode_smiles_from_indexes(map(from_one_hot_array, inp[0]), charset))
+              print("Label:")
+              print(decode_smiles_from_indexes(map(from_one_hot_array, lab[0]), charset))
+              sampled = outp[0].reshape(1, 120, len(charset)).argmax(axis=2)[0]
+              print("Output:")
+              print(decode_smiles_from_indexes(sampled, charset))
+              
+            loss = vae_loss(outputs, labels, mean, logvar)
             loss.backward()
             optimizer.step()
             # scheduler.step(loss)
 
             # print statistics
             running_loss += loss.item()
-            if i % 20 == 19:    # print every 2000 mini-batches
+            if i % 20 == 19:    # print every 20 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 20))
                 running_loss = 0.0
 
     print('Finished Training')
-
-if __name__ == '__main__':
-    main()
