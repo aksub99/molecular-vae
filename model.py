@@ -16,7 +16,7 @@ class MoleculeVAE(nn.Module):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.encoder.to(device)
         self.decoder.to(device)
-        vae_loss, z_latent = self.encoder(x)
+        z_latent, mean, logvar = self.encoder(x)
         decoded_string = self.decoder(z_latent)
         
         if self.mode == 'encoder':
@@ -24,4 +24,4 @@ class MoleculeVAE(nn.Module):
         elif self.mode == 'decoder':
             return self.decoder(x)
         else:
-            return decoded_string, vae_loss
+            return decoded_string, mean, logvar
