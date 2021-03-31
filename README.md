@@ -13,3 +13,9 @@ Molecules**](https://pubs.acs.org/doi/10.1021/acscentsci.7b00572) by:
  * Timothy Hirzel
  * Ryan P. Adams
  * Alán Aspuru-Guzik
+
+# References
+Portions of the code have been re-used from the following repositories:
+ * [topazape/molecular-VAE](https://github.com/topazape/molecular-VAE)
+ * [maxhodak/keras-molecules](https://github.com/maxhodak/keras-molecules)
+ * [cxhernandez/molencoder](https://github.com/cxhernandez/molencoder)
